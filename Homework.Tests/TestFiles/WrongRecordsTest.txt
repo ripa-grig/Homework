@@ -1,0 +1,13 @@
+﻿Entrance examination
+
+Group1
+Alba Hopper;Math=60;Physics=38;English=65
+Harrison Perez;Math=25;Physics=14;Eng=40
+Regan Walton;Math=12;Physics;English=38
+Freya Barnes;Math=86;Physics=45;English=78
+Shantelle Farrow;;Physics=63;English=86
+Lillie Alfaro;Math=32;Physics=15;English=80
+Gabriele Wall;Math=155;Physics=45;English=64
+Nicky Wickens;Math=13;Physics=13;English=78
+Kathy Foreman;Math=66;Physics=35;English=46
+Rohan Buckner;Math=45;Math=21;English=68
