@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using System.Text;
 
 namespace Homework
 {
@@ -11,27 +13,32 @@ namespace Homework
     {
         static void Main()
         {
-            string pathPrefix = @"C:\Users\HGrigor\Desktop\Homework\";
-            string inputPath = pathPrefix + "Data.txt";
-            string outputPath = pathPrefix + "Output.txt";
+            string inputText = GetInputText();
 
-            if (!File.Exists(inputPath))
-            {
-                Console.WriteLine($"The specified path '{inputPath}' doesn't exist.");
-            }
-
-            string inputText = File.ReadAllText(inputPath);
-            if (string.IsNullOrWhiteSpace(inputText))
-            {
-                Console.WriteLine("File doesn't contain any information.");
-                return;
-            }
             List<StudentsList> stByGroups = Parser.TransformRecevedInformation(inputText);
 
             Response response = Analyzer.AnalyzeReceievedInforamtion(stByGroups);
             string responseString = JsonConvert.SerializeObject(response, Formatting.Indented);
 
-            File.WriteAllText(outputPath, responseString);
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string outputPath = Path.GetFullPath(Path.Combine(path, @"..\..\..\"));
+           
+            File.WriteAllText(outputPath + "Output.txt", responseString);
         }
+
+        private static string GetInputText()
+        {
+            Stream stream = typeof(Program).Assembly.GetManifestResourceStream("Homework.Data.txt");
+            if (stream == null)
+            {
+                Console.WriteLine($"Data file is missing.");
+            }
+            stream.Position = 0;
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+
     }
 }

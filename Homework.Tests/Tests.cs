@@ -5,6 +5,7 @@ using Homework.Parameters;
 using Homework.Helpers;
 using System.Linq;
 using System;
+using System.Text;
 
 namespace Homework.Tests
 {
@@ -13,8 +14,7 @@ namespace Homework.Tests
         [Test, Description("Check if that the student information is parsed correctly.")]
         public void StudentsNumberPassTest()
         {
-            string inputPath = @"C:\Users\HGrigor\Desktop\Homework\Homework.Tests\TestFiles\CorrectFile.txt";
-            string inputText = File.ReadAllText(inputPath);
+            string inputText = GetInputText("CorrectFile.txt");
             List<StudentsList> stByGroups = Parser.TransformRecevedInformation(inputText);
 
             Assert.AreEqual(10, stByGroups.FirstOrDefault(i => i.GroupNumber == 1).StudentsByGoup.Count);
@@ -23,11 +23,10 @@ namespace Homework.Tests
         [Test, Description("Check that the incorrect group name is skipped.")]
         public void GroupNameWrongTest()
         {
-            string inputPath = @"C:\Users\HGrigor\Desktop\Homework\Homework.Tests\TestFiles\WrongGroupName.txt";
-            string inputText = File.ReadAllText(inputPath);
+            string inputText = GetInputText("WrongGroupName.txt");
             List<StudentsList> stByGroups = Parser.TransformRecevedInformation(inputText);
             StudentsList group0 = stByGroups.FirstOrDefault(g => g.GroupNumber == 0);
-          
+
             Assert.True(group0 != null);
             Assert.AreEqual(10, group0.StudentsByGoup.Count);
         }
@@ -35,8 +34,7 @@ namespace Homework.Tests
         [Test, Description("Check that the incorrect records don't cause exceptions and are parsed as 0.")]
         public void WrongRecordsTest()
         {
-            string inputPath = @"C:\Users\HGrigor\Desktop\Homework\Homework.Tests\TestFiles\WrongRecordsTest.txt";
-            string inputText = File.ReadAllText(inputPath);
+            string inputText = GetInputText("WrongRecordsTest.txt");
             List<StudentsList> stByGroups = Parser.TransformRecevedInformation(inputText);
 
             Assert.AreEqual(0, stByGroups
@@ -50,11 +48,11 @@ namespace Homework.Tests
             Assert.AreEqual(0, stByGroups
                 .FirstOrDefault(i => i.GroupNumber == 1)
                 .StudentsByGoup.FirstOrDefault(s => string.Compare(s.Name, "Regan Walton", System.StringComparison.OrdinalIgnoreCase) == 0).Physics);
-         
+
             Assert.AreEqual(0, stByGroups
                     .FirstOrDefault(i => i.GroupNumber == 1)
                     .StudentsByGoup.FirstOrDefault(s => string.Compare(s.Name, "Rohan Buckner", System.StringComparison.OrdinalIgnoreCase) == 0).Physics);
-           
+
             Assert.AreEqual(45, stByGroups
                            .FirstOrDefault(i => i.GroupNumber == 1)
                            .StudentsByGoup.FirstOrDefault(s => string.Compare(s.Name, "Rohan Buckner", System.StringComparison.OrdinalIgnoreCase) == 0).Math);
@@ -63,8 +61,7 @@ namespace Homework.Tests
         [Test, Description("Median")]
         public void MedianCalculateTest()
         {
-            string inputPath = @"C:\Users\HGrigor\Desktop\Homework\Homework.Tests\TestFiles\CorrectFile.txt";
-            string inputText = File.ReadAllText(inputPath);
+            string inputText = GetInputText("CorrectFile.txt");
             List<StudentsList> stByGroups = Parser.TransformRecevedInformation(inputText);
             Response response = Analyzer.AnalyzeReceievedInforamtion(stByGroups);
             Assert.AreEqual(45, response.GroupsInfo.FirstOrDefault(g => g.Group == "Group1").Median);
@@ -74,8 +71,7 @@ namespace Homework.Tests
         [Test, Description("Modus")]
         public void ModusCalculateTest()
         {
-            string inputPath = @"C:\Users\HGrigor\Desktop\Homework\Homework.Tests\TestFiles\CorrectFile.txt";
-            string inputText = File.ReadAllText(inputPath);
+            string inputText = GetInputText("CorrectFile.txt");
             List<StudentsList> stByGroups = Parser.TransformRecevedInformation(inputText);
             Response response = Analyzer.AnalyzeReceievedInforamtion(stByGroups);
             Modus modus = response.GroupsInfo.FirstOrDefault(g => string.Compare(g.Group, "Group1", StringComparison.OrdinalIgnoreCase) == 0).Modus;
@@ -87,8 +83,7 @@ namespace Homework.Tests
         [Test, Description("Average")]
         public void AverageCalculateTest()
         {
-            string inputPath = @"C:\Users\HGrigor\Desktop\Homework\Homework.Tests\TestFiles\CorrectFile.txt";
-            string inputText = File.ReadAllText(inputPath);
+            string inputText = GetInputText("CorrectFile.txt");
             List<StudentsList> stByGroups = Parser.TransformRecevedInformation(inputText);
             Response response = Analyzer.AnalyzeReceievedInforamtion(stByGroups);
             Modus modus = response.GroupsInfo.FirstOrDefault(g => g.Group == "Group1").Modus;
@@ -100,8 +95,7 @@ namespace Homework.Tests
         [Test, Description("Student average")]
         public void StudentsAverageTest()
         {
-            string inputPath = @"C:\Users\HGrigor\Desktop\Homework\Homework.Tests\TestFiles\CorrectFile.txt";
-            string inputText = File.ReadAllText(inputPath);
+            string inputText = GetInputText("CorrectFile.txt");
             List<StudentsList> stByGroups = Parser.TransformRecevedInformation(inputText);
             Response response = Analyzer.AnalyzeReceievedInforamtion(stByGroups);
             Modus modus = response.GroupsInfo.FirstOrDefault(g => string.Compare(g.Group, "Group1", StringComparison.OrdinalIgnoreCase) == 0).Modus;
@@ -109,6 +103,16 @@ namespace Homework.Tests
             Assert.AreEqual(25, response.GroupsInfo
                 .FirstOrDefault(g => g.Group == "Group1")
                 .StudentsInfo.FirstOrDefault(s => string.Compare(s.Name, "Harrison Perez", StringComparison.OrdinalIgnoreCase) == 0).Average);
+        }
+
+        public static string GetInputText(string fileName)
+        {
+            Stream stream = typeof(Tests).Assembly.GetManifestResourceStream("Homework.Tests.TestFiles." + fileName);
+            stream.Position = 0;
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+            {
+                return reader.ReadToEnd();
+            }
         }
     }
 }
